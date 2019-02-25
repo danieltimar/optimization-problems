@@ -34,49 +34,72 @@ def calc_max_value_with_lr(item_values, item_weights, k):
     return total_value
 
 
-max_optimistic_value = 0
+max_value = 0
+optimal_list_of_taken = []
 
 
-def build_optimization_tree(item_values, item_weights, k, x=0, taken=[], value=0):
+def build_optimization_tree(item_values, item_weights, k, x, taken=[], value=0):
+
+    local_taken = list(taken)
+
+    global max_value
+    global optimal_list_of_taken
 
     if len(item_values) == 0:
-        return taken
+        if max_value < value:
+            max_value = value
+            optimal_list_of_taken = local_taken
+            return optimal_list_of_taken
+        else:
+            return optimal_list_of_taken
 
     else:
         if x == 1:
             value_increment, weight_increment = item_values[0], item_weights[0]
-            taken.append(1)
+            local_taken.append(1)
 
         elif x == 0:
             value_increment, weight_increment = 0, 0
-            taken.append(0)
+            local_taken.append(0)
 
         value += value_increment
         capacity = k - weight_increment
-        del item_values[0]
-        del item_weights[0]
 
-        optimistic_value_at_point = value + calc_max_value_with_lr(item_values, item_weights, k=capacity)
+        if capacity < 0:
+            return
 
-        global max_optimistic_value
+        local_item_values = list(item_values)
+        local_item_weights = list(item_weights)
+        del local_item_values[0]
+        del local_item_weights[0]
 
-        if max_optimistic_value > optimistic_value_at_point:
-            pass
+        optimistic_value_at_point = value + calc_max_value_with_lr(local_item_values, local_item_weights, k=capacity)
+
+        if max_value > optimistic_value_at_point:
+            return
 
         else:
-            max_optimistic_value = optimistic_value_at_point
-            build_optimization_tree(item_values=item_values, item_weights=item_weights, k=capacity, taken=taken, x=1)
-            build_optimization_tree(item_values=item_values, item_weights=item_weights, k=capacity, taken=taken, x=0)
+            build_optimization_tree(item_values=local_item_values, item_weights=local_item_weights, k=capacity,
+                                    taken=local_taken, value=value, x=1)
+            build_optimization_tree(item_values=local_item_values, item_weights=local_item_weights, k=capacity,
+                                    taken=local_taken, value=value, x=0)
 
+
+
+def calculate_value_of_taken(item_values, taken):
+    return sum(v * taken[i] for (i, v) in enumerate(item_values))
 
 
 if __name__ == "__main__":
-    max_optimistic_value = 0
-    item_values = [45, 48, 35]
-    item_weights = [5, 8, 3]
+    optimal_list_of_taken = []
+    item_values = [8, 10, 15, 4]
+    item_weights = [4, 5, 8, 3]
 
-    taken = build_optimization_tree(item_values=item_values, item_weights=item_weights, k=10, x=0)
-    print(taken)
+    build_optimization_tree(item_values=item_values, item_weights=item_weights, k=11, x=1)
+    build_optimization_tree(item_values=item_values, item_weights=item_weights, k=11, x=0)
+
+    print(optimal_list_of_taken)
+    print(calculate_value_of_taken(item_values, optimal_list_of_taken))
 
 
 
