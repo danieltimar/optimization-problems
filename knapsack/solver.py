@@ -3,6 +3,7 @@
 
 from collections import namedtuple
 import pandas
+import numpy
 Item = namedtuple("Item", ['index', 'value', 'weight'])
 
 
