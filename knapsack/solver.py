@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
+import pandas
 Item = namedtuple("Item", ['index', 'value', 'weight'])
 
 
