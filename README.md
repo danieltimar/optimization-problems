@@ -3,4 +3,4 @@ Solutions to the optimization problems from the Discrete Optimization course (Co
 
 Indiana Jones.
 
-Dani.
+Dani Timar.
